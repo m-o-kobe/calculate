@@ -3,27 +3,29 @@
 #樹種名入れる
 #別のプロットの計算する時はxmaxなどの値の変更の必要がないか確認すること
 
-infile = File.open("ctrl0904.csv", "r")
 
-targetspp="bp"
-plot="int"
+$targetspp="bp"
+plot="ctr"
+$cal="da"
+
+
 if plot=="ctr"
 	infile = File.open("ctrl0115.csv", "r")
-	jogai=484
-	xmax=100.0
-	ymax=50.0
-	xmin=0.0
-	ymin=0.0
+	$jogai=484
+	$xmax=100.0
+	$ymax=50.0
+	$xmin=0.0
+	$ymin=0.0
 elsif plot=="int"
 	infile = File.open("int0115.csv", "r")
-	jogai=484
-	xmax=50.3
-	ymax=50.0
-	xmin=0.0
-	ymin=-50.0
+	$jogai=484
+	$xmax=50.3
+	$ymax=50.0
+	$xmin=0.0
+	$ymin=-50.0
 end
-xmid=xmin+(xmax-xmin)/2
-ymid=ymin+(ymax-ymin)/2
+$xmid=$xmin+($xmax-$xmin)/2
+$ymid=$ymin+($ymax-$ymin)/2
 
 class Tree #クラスTreeを定義
 	attr_accessor :num, :x, :y, :spp, :dbh01, :dbh04, :hgt, :sprout#インスタンス変数を読み書きするためのアクセサメソッドを定義
@@ -60,7 +62,10 @@ def edge_effect( a, x, y )#エッジ効果は林縁部にかかる効果
 		x = y
 		y = _tmp
 	end
-
+	if y<0
+		print x
+		print y
+	end
 	#####################
 	if( x >=a && y >=a )
 		return 1.0
@@ -77,7 +82,26 @@ def edge_effect( a, x, y )#エッジ効果は林縁部にかかる効果
 	end
 end
 	
-	
+def death(dbh04)
+	if dbh04==0
+		return 0
+	else
+		return 1
+	end
+		
+end	
+
+def dorg(target)
+	if $cal=="grow"
+		if target.dbh04!=0.0&&target.spp.include?($targetspp)&&target.dbh01!=0.0&&target.x<=$xmax&&target.x>=$xmin&&target.y<=$ymax&&target.y>=$ymin&&target.num!=$jogai
+			return true
+		end
+	elsif $cal=="da"
+		if target.dbh01!=0.0&&target.spp.include?($targetspp)&&target.x<=$xmax&&target.x>=$xmin&&target.y<=$ymax&&target.y>=$ymin
+			return true
+		end
+	end
+end
 
 
 ############## read file
@@ -110,11 +134,11 @@ Crd8=["crd8"]
 Crd9=["crd9"]
 Kabudachi=["kabudachi"]
 Dgrw=["growth"]
-
+Death=["death"]
 
 
 trees.each do |target|
-	if target.dbh04!=0.0&&target.spp.include?(targetspp)&&target.dbh01!=0.0&&target.x<=xmax&&target.x>=xmin&&target.y<=ymax&&target.y>=ymin&&target.num!=jogai
+	if dorg(target)==true
 
 	   
 	    
@@ -125,17 +149,17 @@ trees.each do |target|
 		Dbh01.push(target.dbh01)
 		Dbh04.push(target.dbh04)
 		Hgt.push(target.hgt)
-		if target.x>xmid
-			edge_x=xmax-target.x
+		if target.x>$xmid
+			edge_x=$xmax-target.x
 		else
-			edge_x=target.x-xmin
+			edge_x=target.x-$xmin
 		end
-		if target.y>ymid
-			edge_y=ymax-target.y
+		if target.y>$ymid
+			edge_y=$ymax-target.y
 		else
-			edge_y=target.y-ymin
+			edge_y=target.y-$ymin
 		end
-		
+
 		
 		[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0].each do |lim_dist|#9回作業を繰り返す
 			efct = 0.0
@@ -195,7 +219,7 @@ trees.each do |target|
 
 
 	Dgrw.push(dgrw(target.dbh04,target.dbh01))
-
+	Death.push(death(target.dbh04))
 	end	
 
 	
@@ -208,8 +232,9 @@ kazu=Num.count-1
 
 require "csv"
 
-CSV.open('g_'+plot+'_'+targetspp+'0115.csv','w') do |test|
+CSV.open($cal+'_'+plot+'_'+$targetspp+'0115.csv','w') do |test|
 	for i in 0..kazu do
+		
 		test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],Crd1[i],Crd2[i],Crd3[i],Crd4[i],Crd5[i],Crd6[i],Crd7[i],Crd8[i],Crd9[i],Kabudachi[i],Dgrw[i]]
 
 	end
