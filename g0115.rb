@@ -5,18 +5,28 @@
 
 infile = File.open("ctrl0904.csv", "r")
 
-targetspp="pt"
-jogai=484
-xmax=100
-ymax=50
-xmin=0
-ymin=0
+targetspp="bp"
+plot="int"
+if plot=="ctr"
+	infile = File.open("ctrl0115.csv", "r")
+	jogai=484
+	xmax=100.0
+	ymax=50.0
+	xmin=0.0
+	ymin=0.0
+elsif plot=="int"
+	infile = File.open("int0115.csv", "r")
+	jogai=484
+	xmax=50.3
+	ymax=50.0
+	xmin=0.0
+	ymin=-50.0
+end
 xmid=xmin+(xmax-xmin)/2
 ymid=ymin+(ymax-ymin)/2
 
-
 class Tree #クラスTreeを定義
-	attr_accessor :num, :x, :y, :spp, :dbh01, :dbh04, :hgt #インスタンス変数を読み書きするためのアクセサメソッドを定義
+	attr_accessor :num, :x, :y, :spp, :dbh01, :dbh04, :hgt, :sprout#インスタンス変数を読み書きするためのアクセサメソッドを定義
 	def initialize( line ) #オブジェクト作成時必ず実行される処理.()内をlineに読み込む
 		buf = line.chop.split(",")#lineの最後の文字を消し(chop),","を区切り文字とした配列をbufに読み込み
 		
@@ -27,6 +37,7 @@ class Tree #クラスTreeを定義
 		@dbh01=buf[4].to_f
 		@dbh04=buf[5].to_f
 		@hgt = buf[6].to_f
+		@sprout=buf[7].to_i
 	end
 
 	
@@ -133,15 +144,24 @@ trees.each do |target|
 				if obj.num != target.num#obj.num≠target.numberならば･･･
 					_dist =dist(target, obj)#targetとobjの距離を_distで返す
 					if _dist<lim_dist&&_dist >=(lim_dist-1.0)#もしtargetとobjectの距離が0~9なら(lim_distより)
-						if obj.spp.include?(targetspp)&&lim_dist==1
-							if _dist==0.0
+						
+						
+						if target.sprout==obj.sprout&&target.sprout!=0
+							if _dist<=0.01
 								kabu+=obj.dbh01/0.01
 							else
 								kabu+=obj.dbh01/_dist
 							end
 						else
-							efct+=obj.dbh01/_dist
+							if _dist<=0.0
+								efct+=obj.dbh01/0.01
+							else
+								efct+=obj.dbh01/_dist
+							end
 						end
+						
+						
+						
 					end
 				end
 			end
@@ -188,10 +208,9 @@ kazu=Num.count-1
 
 require "csv"
 
-CSV.open('gctrl0905pt.csv','w') do |test|
+CSV.open('g_'+plot+'_'+targetspp+'0115.csv','w') do |test|
 	for i in 0..kazu do
 		test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],Crd1[i],Crd2[i],Crd3[i],Crd4[i],Crd5[i],Crd6[i],Crd7[i],Crd8[i],Crd9[i],Kabudachi[i],Dgrw[i]]
-
 
 	end
 	
