@@ -5,12 +5,16 @@
 
 
 $targetspp="bp"
-plot="ctr"
-$cal="da"
+
+plot="int"
+
+
+$cal="da"#"da"or"grow"
 
 
 if plot=="ctr"
 	infile = File.open("ctrl0115.csv", "r")
+	#infile = File.open("test.csv", "r")
 	$jogai=484
 	$xmax=100.0
 	$ymax=50.0
@@ -232,10 +236,20 @@ kazu=Num.count-1
 
 require "csv"
 
-CSV.open($cal+'_'+plot+'_'+$targetspp+'0115.csv','w') do |test|
+CSV.open($cal+'_'+plot+'_'+$targetspp+'0116.csv','w') do |test|
 	for i in 0..kazu do
-		
-		test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],Crd1[i],Crd2[i],Crd3[i],Crd4[i],Crd5[i],Crd6[i],Crd7[i],Crd8[i],Crd9[i],Kabudachi[i],Dgrw[i]]
+		if i>0 then
+			crd=Crd1[i]+Crd2[i]+Crd3[i]+Crd4[i]+Crd5[i]+Crd6[i]+Crd7[i]+Crd8[i]+Crd9[i]
+		else
+			crd="crd"
+		end
+
+		if $cal=="grow" then
+			test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],crd,Kabudachi[i],Dgrw[i]]
+		elsif $cal=="da"
+			test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],crd,Kabudachi[i],Death[i]]
+		end
+			
 
 	end
 	
