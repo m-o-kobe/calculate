@@ -4,12 +4,12 @@
 #別のプロットの計算する時はxmaxなどの値の変更の必要がないか確認すること
 
 
-$targetspp="bp"
+$targetspp="pt"
 
-plot="int"
+plot="ctr"
 
 
-$cal="da"#"da"or"grow"
+$cal="grow"#"da"or"grow"
 
 
 if plot=="ctr"
@@ -21,7 +21,7 @@ if plot=="ctr"
 	$xmin=0.0
 	$ymin=0.0
 elsif plot=="int"
-	infile = File.open("int0115.csv", "r")
+	infile = File.open("int0121.csv", "r")
 	$jogai=484
 	$xmax=50.3
 	$ymax=50.0
@@ -236,7 +236,7 @@ kazu=Num.count-1
 
 require "csv"
 
-CSV.open($cal+'_'+plot+'_'+$targetspp+'0116.csv','w') do |test|
+CSV.open($cal+'_'+plot+'_'+$targetspp+'0121.csv','w') do |test|
 	for i in 0..kazu do
 		if i>0 then
 			crd=Crd1[i]+Crd2[i]+Crd3[i]+Crd4[i]+Crd5[i]+Crd6[i]+Crd7[i]+Crd8[i]+Crd9[i]
@@ -245,9 +245,9 @@ CSV.open($cal+'_'+plot+'_'+$targetspp+'0116.csv','w') do |test|
 		end
 
 		if $cal=="grow" then
-			test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],crd,Kabudachi[i],Dgrw[i]]
+			test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],Crd1[i],Crd2[i],Crd3[i],Crd4[i],Crd5[i],Crd6[i],Crd7[i],Crd8[i],Crd9[i],crd,Kabudachi[i],Dgrw[i]]
 		elsif $cal=="da"
-			test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],crd,Kabudachi[i],Death[i]]
+			test << [Num[i], Xx[i],Yy[i],Spp[i],Dbh01[i],Dbh04[i],Hgt[i],Crd1[i],Crd2[i],Crd3[i],Crd4[i],Crd5[i],Crd6[i],Crd7[i],Crd8[i],Crd9[i],crd,Kabudachi[i],Death[i]]
 		end
 			
 
